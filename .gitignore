@@ -17,3 +17,7 @@ desktop.ini
 
 # 源数据（脱敏，不入库）
 *.xlsx
+
+# 网页存档（外部资料，不入库）
+* - DeepSeek.html
+* - DeepSeek_files/
