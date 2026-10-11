@@ -6,21 +6,24 @@
 
 | 文件 | 说明 |
 |---|---|
-| [`docs/总结-动森钓鱼数值拆解.md`](docs/总结-动森钓鱼数值拆解.md) | **完整总结**：5 轮分析全部结论 |
-| [`docs/分析-稀有度与河海模板规律.md`](docs/分析-稀有度与河海模板规律.md) | **新增**：4 档稀有度 × 河海 逐档模板规律（河系"时间稀缺" vs 海系"概率稀缺"） |
-| [`docs/文章-动森钓鱼数值拆解.md`](docs/文章-动森钓鱼数值拆解.md) | **新增**：面向知乎的长文初稿（硬核科普风格，含 4 张示意图） |
+| [`docs/总结-动森钓鱼数值拆解.md`](docs/总结-动森钓鱼数值拆解.md) | **完整总结**：10 轮分析全部结论 |
+| [`docs/分析-稀有度与河海模板规律.md`](docs/分析-稀有度与河海模板规律.md) | 4 档稀有度 × 河海 逐档模板规律（河系"时间稀缺" vs 海系"概率稀缺"） |
+| [`docs/文章-动森钓鱼数值拆解.md`](docs/文章-动森钓鱼数值拆解.md) | 面向知乎的长文初稿（硬核科普风格，含示意图） |
 | [`docs/对比-fish.json新增信息与机制.md`](docs/对比-fish.json新增信息与机制.md) | `fish.json` 的参考价值与边界（旧资料为权威口径） |
-| [`docs/handoff-20261007-233922.md`](docs/handoff-20261007-233922.md) | **交接文档**：第 6–8 轮（数据源重建 / 稀有度分析 / WPS 写入） |
+| [`docs/handoff-20261012-003702.md`](docs/handoff-20261012-003702.md) | **交接文档**：第 9–10 轮（出没月份图 / 期望收益） |
+| [`docs/handoff-20261007-233922.md`](docs/handoff-20261007-233922.md) | 交接文档：第 6–8 轮（数据源重建 / 稀有度分析 / WPS 写入） |
 | [`docs/handoff-20261005-120604.md`](docs/handoff-20261005-120604.md) | 交接文档（第 1–5 轮） |
-| [`analysis/`](analysis/) | 分析脚本与计算原始输出 |
-| [`data/`](data/) | 官方参数表归档（3 张 CSV） |
+| [`analysis/`](analysis/) | 分析脚本、图表 PNG 与计算原始输出 |
+| [`data/`](data/) | 官方参数表与素材岛表归档（CSV） |
 
 ## 落地交付
 
-「鱼结论记录」页签（WPS《动森鱼虫合集.xlsx》）已写入三列：`H 稀有度`（80 鱼有值）、`I 刷鱼概率均值`、`J 刷鱼概率最大值`（88 行全有值，取自「鱼分析表」V/W 列）。
+「鱼结论记录」页签（WPS《动森鱼虫合集.xlsx》）已写入四列：`G 活动时间`（6 种时段组合）、`I 稀有度`（80 鱼有值）、`J 刷鱼概率均值`、`K 刷鱼概率最大值`（88 行全有值，取自「鱼分析表」V/W 列）。
 
-写入脚本：`analysis/add_rarity_to_wps.py`、`analysis/add_prob_to_wps.py`。
-**注意 I/J 为静态值非活公式** —— 原始权重变更后需重跑脚本。
+写入脚本：`analysis/add_time_to_wps.py`、`analysis/add_rarity_to_wps.py`、`analysis/add_prob_to_wps.py`。
+**注意 J/K 为静态值非活公式** —— 原始权重变更后需重跑脚本。
+
+图表产物（`analysis/`）：出没月份图 4 张（两套排序 × 河海）、期望收益柱状图/热力图 4 张、期望收益 CSV 2 份。
 
 ## 核心发现速览
 
@@ -33,6 +36,7 @@
 - **影子档**：原表 `ShadowType` 实测 9 档（SS/S/M/L/LL/LLL/J/K/U）；影子档 ≠ 价格档。
 - **稀有度（新增）**：4 档标注稀有度是独立第三层，`r(稀有度,价格)=0.902` 而 `r(稀有度,权重)=−0.607`。
 - **模板化**：三层解耦 + 恒定权重和 + 垃圾道具全覆盖 + 影子作视觉编码器 + 月度招牌鱼轮换。
+- **期望收益（新增）**：海鱼 1199–1694 铃钱/次（CV ≈ 13%）全面高于河鱼 443–1457（CV ≈ 38%）——海钓稳定、河钓靠夏季爆发；钓点鱼池由「水域表」定义为叠加型（河流鱼同属河流/悬崖上/出海口）。
 
 ## 概率口径说明
 
@@ -56,6 +60,10 @@ python analysis/deep6.py   # 河海/月度/鱼影/模板化
 python analysis/deep7.py   # 归类法/Jaccard/逐月池子/影子分层
 python analysis/deep9_rarity_river_sea.py   # 原表基线重建 + 稀有度×河海分析
 python analysis/deep8_crossmap.py           # 与 ACNHAPI fish.json 交叉验证
+python analysis/make_month_charts.py        # 出没月份图（4 张，需读 WPS xlsx）
+python analysis/count_monthly.py            # 每月可刷出鱼种数统计
+python analysis/expected_value.py           # 每月每钓点期望收益 + CSV（需读 WPS xlsx）
+python analysis/plot_expected_value.py      # 期望收益柱状图 + 热力图
 ```
 
-依赖：Python 3.13 + openpyxl（deep6/deep7 读 xlsx）；deep9 仅需标准库（读 `data/*.csv`）。
+依赖：Python 3.13 + openpyxl（读 xlsx 的脚本）+ matplotlib（绘图脚本）；deep9 仅需标准库（读 `data/*.csv`）。
